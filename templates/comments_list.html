@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+{% for comment in object_list %}
+    <div style="color: red">
+        {{ comment.id }}
+        {{ comment.text }}
+        {% if comment.is_active %}
+        <form action="{% url 'delete_comment' comment.id %}" method="post">
+        {% csrf_token %}
+        <input type="submit" value="Delete">
+        </form>
+        {% endif %}
+        {% if not comment.is_active %}
+            <form method="post" action="{% url 'update_comment' comment.id %}">
+            {{ comment_update_form }}
+            {% csrf_token %}
+            <input type="submit" value="Update">
+            </form>
+        {% endif %}
+    </div>
+    <br>
+{% endfor %}
+
+    <form method="post" action="{% url 'create_comment' %}">
+    {% csrf_token %}
+    {{ comment_create_form }}
+    <input type="submit" value="Add comment">
+    </form>
+
+    <div class="pagination">
+    <span class="step-links">
+        {% if page_obj.has_previous %}
+            <a href="?page=1">&laquo; first</a>
+            <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+        </span>
+
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}">next</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+        {% endif %}
+    </span>
+</div>
+
+{% endblock %}
